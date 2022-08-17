@@ -12,7 +12,7 @@ INSERT into
   role(id, title, salary, department_id)
 VALUES
 (1, 'Manager', 150000, 1),
-(2, 'Developer', 100000, 1),
+(2, 'Developer', 100000, 2),
 (3, 'Salesman', 75000, 3),
 (4, 'Marketing', 80000, 4),
 (5, 'Accountant', 90000, 5),
