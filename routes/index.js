@@ -1,8 +1,8 @@
 const express = require("express");
-const view = require('./view.js')
+const table = require('./table.js')
 
 const app = express();
 
-app.use('/view', view)
+app.use('/table', table)
 
 module.exports = app;

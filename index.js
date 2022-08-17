@@ -9,11 +9,11 @@ const prompt = () => {
   inquirer
     .prompt(prompts)
     .then((ans) => {
-      if (ans.view) {
-        const view = ans.view;
-        console.log(view);
+      if (ans.start) {
+        const start = ans.start;
+        console.log(start);
         axios
-          .get(`http://localhost:3001/api/view/${view}`)
+          .get(`http://localhost:3001/api/${start}`)
           .then((res) => {
             console.table(res.data)
             prompt();
