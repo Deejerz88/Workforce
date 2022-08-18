@@ -8,15 +8,18 @@ const port = process.env.PORT || 3001;
 
 const prompt = () => {
   let prompts = startPrompts();
-  inquirer
-    .prompt(prompts)
-    .then(async (ans) => {
-      console.log(ans.start);
-      start = ans.start;
-      if (start.includes("add")) {
-        let table = ans.start.substring(3).toLowerCase();
+  inquirer.prompt(prompts).then(async (ans) => {
+    console.log(ans.start);
+    const start = ans.start;
+    const tableArr = start.split("_");
+    const action = tableArr[0];
+    const table = tableArr.length > 1 ? tableArr[1].toLowerCase() : "";
+    console.log({ action })
+    console.log(table) 
+    switch (action) {
+      case "add":
         console.log({ table });
-        let prompts = await require(`./utils/${table}Prompts`)();
+        prompts = await require(`./utils/${table}Prompts`)();
         console.log({ prompts });
         inquirer.prompt(prompts).then((ans) => {
           console.log("anser", ans);
@@ -30,14 +33,15 @@ const prompt = () => {
               console.log(err);
             });
         });
-      } else if (start.includes("update")) {
-        let table = ans.start.substring(6).toLowerCase();
+        break;
+      case "update":
+        const str = ans.start;
         console.log({ table });
-        let update = { new: {} }
-        let prompts = await require(`./utils/${table}Prompts`)("employee");
+        let update = { new: {} };
+        prompts = await require(`./utils/${table}Prompts`)(table);
         inquirer.prompt(prompts).then(async (ans) => {
           update.id = ans.id;
-          let field = ans.field
+          let field = ans.field || "name";
           prompts = await require(`./utils/${table}Prompts`)(field);
           inquirer.prompt(prompts).then((ans) => {
             update.new[field] = ans[field];
@@ -52,8 +56,9 @@ const prompt = () => {
                 console.log(err);
               });
           });
-        })
-      } else {
+        });
+        break;
+      default:
         axios
           .get(`http://localhost:${port}/${ans.start}`)
           .then((res) => {
@@ -63,11 +68,8 @@ const prompt = () => {
           .catch((err) => {
             console.log(err);
           });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    }
+  });
 };
 
 prompt();

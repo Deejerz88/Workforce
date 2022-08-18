@@ -4,7 +4,7 @@ const employeePrompts = async (update) => {
   console.log("employeePrompts");
   let empData = await axios.get("http://localhost:3001/employee");
   let roleData = await axios.get("http://localhost:3001/role");
-  console.log({ update });
+  console.log("employee", { update });
   switch (update) {
     case "employee":
       return [
@@ -21,7 +21,6 @@ const employeePrompts = async (update) => {
           name: "field",
           message: "Which field would you like to update?",
           choices: [
-            { name: "ID", value: "id" },
             { name: "First Name", value: "first_name" },
             { name: "Last Name", value: "last_name" },
             { name: "Job Title", value: "role_id" },
@@ -33,25 +32,14 @@ const employeePrompts = async (update) => {
       console.log("update", update);
       if (update.includes("id")) {
         const field = update.split("_")[0];
-        let data;
-        let name;
-        let value;
-        if (field === "manager") {
-          data = empData.data;
-          name = `${emp.First} ${emp.Last}`;
-          value = emp.ID;
-        } else {
-          data = roleData.data;
-          name = role.Title;
-          value = role.ID;
-        }
+        const data = field === 'manager' ? empData.data : roleData.data;
         return [
           {
             type: "list",
             name: update,
             message: `What is the employee's new ${field}?`,
-            choices: empData.data.map((emp) => {
-              return { name, value };
+            choices: data.map((v) => {
+              return { name:v.Title || `${v.First} ${v.Last}`, value: v.ID };
             }),
           },
         ];
