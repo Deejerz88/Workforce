@@ -86,6 +86,28 @@ app
       .catch((err) => {
         console.log(err);
       });
-  }).put(async (req, res) => { });
+  })
+  .put(async (req, res) => {
+    console.log(req.body);
+    const table = req.params.table;
+    const tables = ["department", "role", "employee"];
+    if (!tables.includes(table)) res.status(404).end();
+    const columns = Object.keys(req.body.new);
+    console.log({columns})
+    const placeholders = columns.map((v) => "?").toString();
+    const query = `UPDATE ${table} SET ${columns} = (${placeholders}) WHERE id = ?`;
+    const [rows] = await db
+      .promise()
+      .query(query, [...Object.values(req.body.new), req.body.id]);
+    axios
+      .get(`http://localhost:${port}/${table}`)
+      .then((result) => {
+        returnData = result.data;
+        res.json(returnData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
 
 module.exports = app;

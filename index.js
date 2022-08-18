@@ -10,14 +10,16 @@ const prompt = () => {
   let prompts = startPrompts();
   inquirer
     .prompt(prompts)
-    .then((ans) => {
+    .then(async (ans) => {
       console.log(ans.start);
       start = ans.start;
       if (start.includes("add")) {
         let table = ans.start.substring(3).toLowerCase();
         console.log({ table });
-        let prompts = require(`./utils/${table}Prompts`)();
+        let prompts = await require(`./utils/${table}Prompts`)();
+        console.log({ prompts });
         inquirer.prompt(prompts).then((ans) => {
+          console.log("anser", ans);
           axios
             .post(`http://localhost:${port}/${table}`, ans)
             .then((res) => {
@@ -28,21 +30,29 @@ const prompt = () => {
               console.log(err);
             });
         });
-      } else if (start.includes("updated")) {
-        let table = ans.start.substring(7).toLowerCase();
+      } else if (start.includes("update")) {
+        let table = ans.start.substring(6).toLowerCase();
         console.log({ table });
-        let prompts = require(`./utils/${table}Prompts`)('update');
-        inquirer.prompt(prompts).then((ans) => {
-          axios
-            .put(`http://localhost:${port}/${table}`, ans)
-            .then((res) => {
-              console.table(res.data);
-              prompt();
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        });
+        let update = { new: {} }
+        let prompts = await require(`./utils/${table}Prompts`)("employee");
+        inquirer.prompt(prompts).then(async (ans) => {
+          update.id = ans.id;
+          let field = ans.field
+          prompts = await require(`./utils/${table}Prompts`)(field);
+          inquirer.prompt(prompts).then((ans) => {
+            update.new[field] = ans[field];
+            console.log("update", update);
+            axios
+              .put(`http://localhost:${port}/${table}`, update)
+              .then((res) => {
+                console.table(res.data);
+                prompt();
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          });
+        })
       } else {
         axios
           .get(`http://localhost:${port}/${ans.start}`)
