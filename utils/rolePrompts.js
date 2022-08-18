@@ -1,9 +1,9 @@
 const axios = require("axios").default;
 
-
 const rolePrompts = async (update) => {
-const roleData = await axios.get("http://localhost:3001/role");
-const departmentData = await axios.get("http://localhost:3001/department");
+  const roleData = await axios.get("http://localhost:3001/role");
+  const departmentData = await axios.get("http://localhost:3001/department");
+  console.log('role', { update });
   switch (update) {
     case "role":
       return [
@@ -37,27 +37,33 @@ const departmentData = await axios.get("http://localhost:3001/department");
           }),
         },
       ];
-    case update:
-      if (update.includes("id")) {
-        return [
-          {
-            type: "list",
-            name: update,
-            message: `What is the role's new department?`,
-            choices: departmentData.data.map((department) => {
-              return { name: department.Name, value: department.ID };
-            }),
-          },
-        ];
-      } else {
-        return [
-          {
-            type: "input",
-            name: update,
-            message: `What is the new ${update}?`,
-          },
-        ];
-      }
+    case "department_id":
+      return [
+        {
+          type: "list",
+          name: update,
+          message: `What is the role's new department?`,
+          choices: departmentData.data.map((department) => {
+            return { name: department.Name, value: department.ID };
+          }),
+        },
+      ];
+    case "salary":
+      return [
+        {
+          type: "input",
+          name: update,
+          message: `What is the new ${update}?`,
+        },
+      ];
+    case "title":
+      return [
+        {
+          type: "input",
+          name: update,
+          message: `What is the new ${update}?`,
+        },
+      ];
     default:
       return [
         {
