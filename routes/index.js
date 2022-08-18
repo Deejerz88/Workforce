@@ -26,8 +26,7 @@ app
     const table = req.params.table;
     console.log({ table });
     if (table === "employee") {
-      let query = `
-        SELECT
+      let query = `SELECT
           employee.id AS ID, 
           employee.first_name AS First, 
           employee.last_name AS Last, 
@@ -93,7 +92,7 @@ app
     const tables = ["department", "role", "employee"];
     if (!tables.includes(table)) res.status(404).end();
     const columns = Object.keys(req.body.new);
-    console.log({columns})
+    console.log({ columns });
     const placeholders = columns.map((v) => "?").toString();
     const query = `UPDATE ${table} SET ${columns} = (${placeholders}) WHERE id = ?`;
     const [rows] = await db
@@ -109,5 +108,33 @@ app
         console.log(err);
       });
   });
+app.route("/:table/:ref/:id").get(async (req, res) => {
+  const table = req.params.table;
+  const ref = req.params.ref;
+  const query = `SELECT
+      employee.id AS ID, 
+      employee.first_name AS First, 
+      employee.last_name AS Last, 
+      role.title AS 'Job Title',
+      role.salary AS Salary,
+      department.name AS Department,
+      CONCAT(manager.first_name," ",manager.last_name) AS Manager
+    FROM ${table}
+    JOIN role ON employee.role_id = role.id
+    JOIN department ON role.department_id = department.id
+    LEFT JOIN employee as manager ON employee.manager_id = manager.id
+    WHERE ${ref}.id = ?
+
+    ORDER BY employee.id;`;
+  console.log(table, ref, query);
+  const [rows] = await db.promise().query(query, [req.params.id]);
+  res.json(rows);
+});
+app.route("/:table/:id").delete(async (req, res) => {
+  const table = req.params.table;
+  const query = `DELETE FROM ${table} WHERE id = ?`;
+  const [rows] = await db.promise().query(query, [req.params.id]);
+  res.json(rows);
+});
 
 module.exports = app;

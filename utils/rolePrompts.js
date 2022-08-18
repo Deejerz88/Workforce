@@ -26,6 +26,17 @@ const departmentData = await axios.get("http://localhost:3001/department");
           ],
         },
       ];
+    case "remove":
+      return [
+        {
+          type: "list",
+          name: "id",
+          message: "Which role would you like to remove?",
+          choices: roleData.data.map((role) => {
+            return { name: role.Title, value: role.ID };
+          }),
+        },
+      ];
     case update:
       if (update.includes("id")) {
         return [
@@ -36,9 +47,9 @@ const departmentData = await axios.get("http://localhost:3001/department");
             choices: departmentData.data.map((department) => {
               return { name: department.Name, value: department.ID };
             }),
-          }
-        ]
-      } else { 
+          },
+        ];
+      } else {
         return [
           {
             type: "input",

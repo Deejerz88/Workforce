@@ -23,6 +23,17 @@ const departmentPrompts = async (update) => {
           message: "What is the new department name?",
         },
       ];
+    case "remove":
+      return [
+        {
+          type: "list",
+          name: "id",
+          message: "Which department would you like to remove?",
+          choices: departmentData.data.map((dep) => {
+            return { name: dep.Name, value: dep.ID };
+          }),
+        },
+      ];
     default:
       return [
         {

@@ -9,16 +9,14 @@ const port = process.env.PORT || 3001;
 const prompt = () => {
   let prompts = startPrompts();
   inquirer.prompt(prompts).then(async (ans) => {
-    console.log(ans.start);
     const start = ans.start;
     const tableArr = start.split("_");
     const action = tableArr[0];
     const table = tableArr.length > 1 ? tableArr[1].toLowerCase() : "";
-    console.log({ action })
-    console.log(table) 
+    const ref = tableArr.length > 2 ? tableArr[2].toLowerCase() : "";
+    console.log({ ref });
     switch (action) {
       case "add":
-        console.log({ table });
         prompts = await require(`./utils/${table}Prompts`)();
         console.log({ prompts });
         inquirer.prompt(prompts).then((ans) => {
@@ -35,8 +33,6 @@ const prompt = () => {
         });
         break;
       case "update":
-        const str = ans.start;
-        console.log({ table });
         let update = { new: {} };
         prompts = await require(`./utils/${table}Prompts`)(table);
         inquirer.prompt(prompts).then(async (ans) => {
@@ -58,9 +54,44 @@ const prompt = () => {
           });
         });
         break;
+      case "view":
+        prompts = await require(`./utils/${table}Prompts`)(ref);
+        inquirer.prompt(prompts).then((ans) => {
+          axios
+            .get(`http://localhost:${port}/${table}/${ref}/${ans.id}`)
+            .then((res) => {
+              console.table(res.data);
+              prompt();
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+        break;
+      case "remove":
+        prompts = await require(`./utils/${table}Prompts`)("remove");
+        inquirer.prompt(prompts).then((ans) => {
+          axios
+            .delete(`http://localhost:${port}/${table}/${ans.id}`)
+            .then((res) => {
+              axios
+                .get(`http://localhost:${port}/${table}`)
+                .then((res) => {
+                  console.table(res.data);
+                  prompt();
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        });
+        break;
       default:
         axios
-          .get(`http://localhost:${port}/${ans.start}`)
+          .get(`http://localhost:${port}/${start}`)
           .then((res) => {
             console.table(res.data);
             prompt();
