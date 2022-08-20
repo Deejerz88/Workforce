@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const port = process.env.PORT || 3001;
 
-const prompt = async () => {
+const prompt = () => {
   let prompts = startPrompts();
   inquirer.prompt(prompts).then(async (ans) => {
     const start = ans.start;
