@@ -2,7 +2,7 @@ const inquirer = require("inquirer");
 const axios = require("axios").default;
 const cTable = require("console.table");
 const startPrompts = require("./lib/prompts/startPrompts");
-const art = require("ascii-art-font");
+const art = require("ascii-art");
 
 require("dotenv").config();
 
@@ -23,7 +23,7 @@ const prompt = async () => {
           axios
             .post(`http://localhost:${port}/${table}`, { data: ans, table })
             .then((res) => {
-              art.create(
+              art.font(
                 `${table.replace(table[0], table[0].toUpperCase())}s`,
                 "Doom",
                 (err, rendered) => {
@@ -54,7 +54,7 @@ const prompt = async () => {
             axios
               .put(`http://localhost:${port}/${table}`, { data, table })
               .then((res) => {
-                art.create(
+                art.font(
                   `${table.replace(table[0], table[0].toUpperCase())}s`,
                   "Doom",
                   (err, rendered) => {
@@ -76,7 +76,7 @@ const prompt = async () => {
           axios
             .get(`http://localhost:${port}/${table}/${ref}/${ans.id}`)
             .then((res) => {
-              art.create(
+              art.font(
                 `${table.replace(table[0], table[0].toUpperCase())}s`,
                 "Doom",
                 (err, rendered) => {
@@ -102,7 +102,7 @@ const prompt = async () => {
               axios
                 .get(`http://localhost:${port}/${table}`)
                 .then((res) => {
-                  art.create(
+                  art.font(
                     `${table.replace(table[0], table[0].toUpperCase())}s`,
                     "Doom",
                     (err, rendered) => {
@@ -122,7 +122,7 @@ const prompt = async () => {
         });
         break;
       case "exit":
-        art.create("GoodBye", "Doom", (err, rendered) => {
+        art.font("GoodBye", "Doom", (err, rendered) => {
           console.log(rendered);
         });
         return;
@@ -130,7 +130,7 @@ const prompt = async () => {
         axios
           .get(`http://localhost:${port}/${table}`)
           .then((res) => {
-            art.create(
+            art.font(
               `${table.replace(table[0], table[0].toUpperCase())}s`,
               "Doom",
               (err, rendered) => {
@@ -147,7 +147,7 @@ const prompt = async () => {
   });
 };
 
-art.create("WorkForce", "Doom", (err, rendered) => {
+art.font("WorkForce", "Doom", (err, rendered) => {
   console.log(rendered);
   prompt();
 });

@@ -1,8 +1,4 @@
 {
-  "scripts": {
-    "start": "node index.js",
-    "server": "node server.js"
-  },
   "dependencies": {
     "ascii-art": "^2.8.5",
     "axios": "^0.27.2",
